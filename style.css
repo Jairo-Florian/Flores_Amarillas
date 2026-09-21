@@ -368,7 +368,7 @@ header {
 
   /* Aislamos la imagen con espacio interno obligatorio */
   .bouquet-img-wrapper {
-    height: 230px; /* Reducimos altura para garantizar margen */
+    height: 200px; /* Reducimos altura para garantizar margen */
     padding: 12px; /* Escudo protector alrededor de la imagen */
     margin-bottom: 15px;
     max-width: 100%;
