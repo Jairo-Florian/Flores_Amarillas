@@ -34,11 +34,10 @@ header {
   position: relative;
   z-index: 10;
   text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  padding: 0 15px;
+  margin-top: 2.5rem; /* Aumentamos el margen superior */
+  margin-bottom: 1rem;
+  padding: 0 20px;
 }
-
 .font-serif-title {
   font-family: 'Cinzel', serif;
   background: linear-gradient(to right, #fef08a, #fcd34d, #eab308);
@@ -135,7 +134,7 @@ header {
 .bouquet-img-wrapper {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width:400px;
   height: 420px;
   margin: 0 auto 20px;
   display: flex;
