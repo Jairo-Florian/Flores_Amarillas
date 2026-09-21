@@ -120,38 +120,158 @@ function setPausedState() {
 }
 
 // Intentar reproducir automáticamente al cargar
-function playAudio() {
-  bgMusic.play().then(() => {
-    setPlayingState();
-  }).catch((error) => {
-    console.log("Autoplay bloqueado por el navegador. Se iniciará en la primera interacción.");
-    
-    // Si el navegador lo bloqueó, reproducir en la primera interacción (clic o toque)
-    const startAudioOnInteraction = () => {
-      bgMusic.play().then(() => {
-        setPlayingState();
-      });
-      // Remover los escuchadores de evento una vez activado
-      document.removeEventListener('click', startAudioOnInteraction);
-      document.removeEventListener('touchstart', startAudioOnInteraction);
-    };
+document.addEventListener('DOMContentLoaded', () => {
+  
+  // Elementos DOM
+  const bouquetImg = document.getElementById('bouquetImg');
+  const bouquetCard = document.querySelector('.bouquet-card');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const btnDedicatoria = document.getElementById('btnDedicatoria');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+  const btnAcceptModal = document.getElementById('btnAcceptModal');
+  const btnEfecto = document.getElementById('btnEfecto');
+  const bouquetContainer = document.getElementById('bouquetContainer');
+  const particlesContainer = document.getElementById('particles');
 
-    document.addEventListener('click', startAudioOnInteraction);
-    document.addEventListener('touchstart', startAudioOnInteraction);
-  });
-}
+  // Elementos de Audio
+  const bgMusic = document.getElementById('bgMusic');
+  const btnMusic = document.getElementById('btnMusic');
+  const musicText = document.getElementById('musicText');
+  const musicIcon = btnMusic ? btnMusic.querySelector('i') : null;
 
-// Ejecutar el intento de reproducción al iniciar
-playAudio();
-
-// Evento del botón manual (Reproducir / Pausar)
-btnMusic.addEventListener('click', (e) => {
-  e.stopPropagation(); // Evita interferencias con el listener global
-  if (bgMusic.paused) {
-    bgMusic.play();
-    setPlayingState();
-  } else {
-    bgMusic.pause();
-    setPausedState();
+  // 1. Partículas Doradas
+  function createParticles() {
+    const particleCount = 25;
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      
+      const size = Math.random() * 6 + 2;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.animationDuration = `${Math.random() * 8 + 4}s`;
+      particle.style.animationDelay = `${Math.random() * 5}s`;
+      
+      particlesContainer.appendChild(particle);
+    }
   }
+  createParticles();
+
+  // 2. Movimiento 3D Exclusivo para la Foto
+  if (bouquetCard && bouquetImg) {
+    bouquetCard.addEventListener('mousemove', (e) => {
+      const rect = bouquetCard.getBoundingClientRect();
+      const x = e.clientX - rect.left - (rect.width / 2);
+      const y = e.clientY - rect.top - (rect.height / 2);
+      
+      const xAxis = x / 12;
+      const yAxis = -y / 12;
+      
+      bouquetImg.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg) scale(1.08) translateY(-10px)`;
+    });
+
+    bouquetCard.addEventListener('mouseleave', () => {
+      bouquetImg.style.transform = `rotateY(0deg) rotateX(0deg) scale(1) translateY(0px)`;
+    });
+  }
+
+  // 3. Sistema de Reproducción Automática de Música en la Primera Interacción
+  let isPlaying = false;
+
+  function updateMusicUI(playing) {
+    isPlaying = playing;
+    if (!btnMusic) return;
+    
+    if (playing) {
+      btnMusic.classList.add('playing');
+      if (musicIcon) musicIcon.className = 'fa-solid fa-pause';
+      if (musicText) musicText.textContent = 'Pausar';
+    } else {
+      btnMusic.classList.remove('playing');
+      if (musicIcon) musicIcon.className = 'fa-solid fa-music';
+      if (musicText) musicText.textContent = 'Música';
+    }
+  }
+
+  function startAudio() {
+    if (bgMusic && !isPlaying) {
+      bgMusic.play().then(() => {
+        updateMusicUI(true);
+        // Desactivar los escuchadores globales una vez que ya inició el audio
+        document.removeEventListener('click', startAudio);
+        document.removeEventListener('touchstart', startAudio);
+      }).catch(err => {
+        console.log("Esperando interacción del usuario para audio...");
+      });
+    }
+  }
+
+  // Intenta reproducir al cargar
+  startAudio();
+
+  // Si el navegador lo bloqueó, reproducirá al tocar o hacer clic en cualquier lado
+  document.addEventListener('click', startAudio, { once: false });
+  document.addEventListener('touchstart', startAudio, { once: false });
+
+  // Botón Manual de Música (Pausar / Reproducir)
+  if (btnMusic && bgMusic) {
+    btnMusic.addEventListener('click', (e) => {
+      e.stopPropagation(); // Evita conflictos con el listener global
+      if (bgMusic.paused) {
+        bgMusic.play();
+        updateMusicUI(true);
+      } else {
+        bgMusic.pause();
+        updateMusicUI(false);
+      }
+    });
+  }
+
+  // 4. Modal de Dedicatoria
+  if (btnDedicatoria) {
+    btnDedicatoria.addEventListener('click', (e) => {
+      e.stopPropagation();
+      startAudio(); // Inicia la música si aún no había sonado
+      modalOverlay.classList.add('active');
+    });
+  }
+
+  const closeModal = () => modalOverlay.classList.remove('active');
+  if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
+  if (btnAcceptModal) btnAcceptModal.addEventListener('click', closeModal);
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+  }
+
+  // 5. Confeti de Flores
+  function triggerConfetti() {
+    if (typeof confetti === 'function') {
+      confetti({
+        particleCount: 70,
+        spread: 60,
+        origin: { y: 0.7 },
+        colors: ['#ffd700', '#ffa500', '#ffffff', '#fff3a0']
+      });
+    }
+  }
+
+  if (btnEfecto) {
+    btnEfecto.addEventListener('click', (e) => {
+      e.stopPropagation();
+      startAudio();
+      triggerConfetti();
+    });
+  }
+  
+  if (bouquetContainer) {
+    bouquetContainer.addEventListener('click', (e) => {
+      e.stopPropagation();
+      startAudio();
+      triggerConfetti();
+    });
+  }
+
 });
