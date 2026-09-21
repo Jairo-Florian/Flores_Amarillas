@@ -342,34 +342,51 @@ header {
 /* Responsivo para móviles */
 @media (max-width: 600px) {
   body {
-    padding: 10px 0;
+    padding: 15px 0;
   }
 
+  /* Margen superior del título */
   header {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: 1.8rem;
+    margin-bottom: 0.8rem;
+    padding: 0 15px;
   }
 
   .font-serif-title {
-    font-size: 2.2rem;
+    font-size: 1.8rem; /* Tamaño adecuado para pantallas reducidas */
+    line-height: 1.25;
   }
 
   .main-container {
-    padding: 10px 15px;
+    padding: 5px 15px 20px;
   }
 
   .bouquet-card {
-    padding: 20px 15px;
-    border-radius: 20px;
+    padding: 25px 18px; /* Espacio interno de la tarjeta */
+    border-radius: 24px;
   }
 
+  /* Aislamos la imagen con espacio interno obligatorio */
   .bouquet-img-wrapper {
-    height: 280px;
+    height: 230px; /* Reducimos altura para garantizar margen */
+    padding: 12px; /* Escudo protector alrededor de la imagen */
     margin-bottom: 15px;
+    max-width: 100%;
+  }
+
+  .bouquet-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  /* Evitamos que la imagen se agrande al hacer tap/clic */
+  .bouquet-img-wrapper:active .bouquet-image {
+    transform: scale(0.98) !important; 
   }
 
   .bouquet-title {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
   .bouquet-subtitle {
